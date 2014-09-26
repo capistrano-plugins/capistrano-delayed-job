@@ -1,0 +1,58 @@
+#! /bin/sh
+ 
+### BEGIN INIT INFO
+# Provides:          delayed_job
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:	 $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:		 0 1 6
+# Short-Description: Manage delayed jobs for application <%= fetch(:application) %> , environment <%= fetch(:rails_env) %>
+# Description:       Start, stop, restart delayed jobs for application <%= fetch(:application) %>, environment <%= fetch(:rails_env) %>
+### END INIT INFO
+ 
+N=/etc/init.d/delayed_job
+APP_ROOT=<%= current_path %>
+AS_USER=<%= fetch(:delayed_job_user) %>
+service="delayed_job"
+
+
+
+# CMD="cd $APP_ROOT && HOME=/home/deploy /tmp/vjw-deploy/rvm-auto.sh . bundle exec unicorn -D -c /var/www/vjw/shared/config/unicorn.rb -E edg_mx"
+
+
+CMD="cd $APP_ROOT && HOME=/home/$AS_USER RAILS_ENV=<%= fetch(:rails_env) %> nice -n 15 <%= bundle_delayed_job("$op -n", fetch(:delayed_job_workers))%>"
+ 
+set -e
+ 
+usage() {
+  echo "Usage: $N {start|stop|status|restart|force-reload} [environment]" >&2
+  exit 1
+}
+ 
+set -e
+ 
+#[ -n "$2" ] || usage
+
+interact() {
+    op="$1"
+
+    if [ "$(id -un)" = "$AS_USER" ]; then
+        eval $CMD
+    else
+        su -c "$CMD" - $AS_USER
+    fi
+}
+ 
+case "$1" in
+    start|stop|status)
+        interact "$1"
+        ;;
+    reload|restart|force-reload)
+        interact restart
+        ;;
+    *)
+        usage
+        ;;
+esac
+ 
+exit 0
