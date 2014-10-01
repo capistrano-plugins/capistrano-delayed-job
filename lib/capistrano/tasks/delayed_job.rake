@@ -22,7 +22,7 @@ namespace :delayed_job do
   end
 
   desc 'Setup DelayedJob initializer'
-  task :setup_initializer do
+  task :setup do
     on roles fetch(:delayed_job_server_roles) do
       sudo_upload! dj_template('delayed_job_init.erb'), delayed_job_initd_file
       execute :chmod, '+x', delayed_job_initd_file
@@ -30,21 +30,14 @@ namespace :delayed_job do
     end
   end
 
-  before :setup_initializer, :defaults
+  before :setup, :defaults
 
-  %w[start stop].each do |command|
+  %w[start stop restart].each do |command|
     desc "#{command} delayed_job"
     task command do
       on roles fetch(:delayed_job_server_roles) do
         sudo :service, "#{fetch(:delayed_job_service)} #{command}"
       end
-    end
-  end
-
-  task :restart do # restart doesn't work properly. Just stop and start in two steps
-    on roles fetch(:delayed_job_server_roles) do
-      invoke :stop
-      invoke :start
     end
   end
 end
@@ -55,5 +48,5 @@ end
 
 desc 'Server setup tasks'
 task :setup do
-  invoke 'delayed_job:setup_initializer'
+  invoke 'delayed_job:setup'
 end

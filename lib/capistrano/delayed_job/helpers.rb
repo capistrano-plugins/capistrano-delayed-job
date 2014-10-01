@@ -5,7 +5,7 @@ module Capistrano
     module Helpers
 
       def bundle_delayed_job(*args)
-        SSHKit::Command.new(:bundle, :exec, "scripts/delayed_job", args).to_command
+        SSHKit::Command.new(:bundle, :exec, "script/delayed_job", args).to_command
       end
 
       def dj_template(template_name)

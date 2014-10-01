@@ -16,11 +16,10 @@ Gem::Specification.new do |gem|
 
     Works *only* with Capistrano 3+.
 
-    Heavily inspired (i.e. copied and reworked) by https://github.com/bruno-/capistrano-unicorn-nginx and
-    http://bl.ocks.org/dv/10370719
+    Inspired by https://github.com/bruno-/capistrano-unicorn-nginx and http://bl.ocks.org/dv/10370719
   EOF
   gem.summary       = "Capistrano tasks for automatic and sensible DelayedJob configuration."
-  gem.homepage      = "https://github.com/rhomeister/capistrano-delayed-job"
+  gem.homepage      = "https://github.com/capistrano-plugins/capistrano-delayed-job"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
