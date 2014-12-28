@@ -22,7 +22,7 @@ set -e
 interact() {
     op="$1"
     echo "Invoking DelayedJob with command '$op'"
-    CMD="cd $APP_ROOT && HOME=/home/$AS_USER RAILS_ENV=<%= fetch(:rails_env) %> <%= bundle_delayed_job("$op -n", fetch(:delayed_job_workers))%>"
+    CMD="cd $APP_ROOT && <%= bundle_delayed_job("$op -n", fetch(:delayed_job_workers))%>"
 
     if [ "$(id -un)" = "$AS_USER" ]; then
         eval $CMD
