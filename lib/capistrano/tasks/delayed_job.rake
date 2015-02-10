@@ -8,6 +8,7 @@ namespace :load do
   task :defaults do
     set :delayed_job_workers, 1
     set :delayed_job_service, -> { "delayed_job_#{fetch(:application)}_#{fetch(:stage)}" }
+    set :delayed_job_monit_enabled, false
 
     set :delayed_job_server_roles, [:app]
   end
@@ -36,7 +37,22 @@ namespace :delayed_job do
     desc "#{command} delayed_job"
     task command do
       on roles fetch(:delayed_job_server_roles) do
-        sudo :service, "#{fetch(:delayed_job_service)} #{command}"
+        if fetch(:delayed_job_monit_enabled)
+          # monit is enabled, use it to restart the service
+          sudo :monit, '-g', 'delayed_job', command
+        else
+          # monit is disabled, use the standard init script
+          sudo :service, fetch(:delayed_job_service), command
+        end
+      end
+    end
+  end
+
+  namespace :monit do
+    task :setup do
+      on roles fetch(:delayed_job_server_roles) do
+        sudo_upload! dj_template('delayed_job.monitrc.erb'), delayed_job_monitrc_file
+        sudo :service, 'monit restart'
       end
     end
   end
@@ -49,4 +65,5 @@ end
 desc 'Server setup tasks'
 task :setup do
   invoke 'delayed_job:setup'
+  invoke 'delayed_job:monit:setup' if fetch(:delayed_job_monit_enabled)
 end

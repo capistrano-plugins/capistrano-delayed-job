@@ -4,10 +4,16 @@ module Capistrano
   module DelayedJob
     module Helpers
 
-      def bundle_delayed_job(*args)
-        bin_dir = %w{bin script}.find{|dir_name| Dir.exists?(dir_name)}
-        raise "No bin or script dir found in project" if bin_dir.nil?
-        SSHKit::Command.new("HOME=/home/$AS_USER", "RAILS_ENV=#{fetch(:rails_env)}", :nice, '-n 15', :bundle, :exec, "#{bin_dir}/delayed_job", args).to_command
+      def delayed_job_command(*args)
+        "cd #{current_path} && " <<
+            SSHKit::Command.new("HOME=/home/#{deploy_user}",
+                                "RAILS_ENV=#{fetch(:rails_env)}",
+                                :nice,
+                                '-n 15',
+                                :bundle,
+                                :exec,
+                                delayed_job_script_relative_path,
+                                args).to_command
       end
 
       def dj_template(template_name)
@@ -24,7 +30,7 @@ module Capistrano
       end
 
       def deploy_user
-        capture :id, '-un'
+        @deploy_user ||= capture(:id, '-un')
       end
 
       def sudo_upload!(from, to)
@@ -35,6 +41,16 @@ module Capistrano
         sudo :mv, tmp_file, to_dir
       end
 
+      def delayed_job_script_relative_path
+        "#{relative_bin_path}/delayed_job"
+      end
+
+      private
+      def relative_bin_path
+        bin_path = %w{bin script}.find { |dir_name| Dir.exists?(dir_name) }
+        raise "No bin or script dir found in project" if bin_path.nil?
+        bin_path
+      end
     end
   end
 end

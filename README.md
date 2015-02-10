@@ -74,6 +74,13 @@ The roles on which the DelayedJob should run.
 * `set :delayed_job_service, -> { "delayed_job_#{fetch(:application)}_#{fetch(:stage)}" }`<br/>
 The name of the service that DelayedJob uses.
 
+* `set :delayed_job_monit_enabled, false` <br/>
+Use monit to monitor DelayedJob processes. This is especially useful on roles with
+constrained memory. On these nodes, DelayedJob processes are regularly killed by the 
+OS. In order to use this setting, install monit on roles that run DelayedJob and
+start monit's httpd server. See (here)[http://mmonit.com/monit/documentation/monit.html#MONIT-HTTPD]
+for instructions.
+
 ### Template customization
 
 If you want to change default templates, you can generate them using

@@ -11,18 +11,15 @@
 ### END INIT INFO
  
 N=/etc/init.d/delayed_job
-APP_ROOT=<%= current_path %>
 AS_USER=<%= fetch(:delayed_job_user) %>
 service="delayed_job"
 
-
- 
 set -e
 
 interact() {
     op="$1"
     echo "Invoking DelayedJob with command '$op'"
-    CMD="cd $APP_ROOT && <%= bundle_delayed_job("$op -n", fetch(:delayed_job_workers))%>"
+    CMD="<%= delayed_job_command("$op -n", fetch(:delayed_job_workers))%>"
 
     if [ "$(id -un)" = "$AS_USER" ]; then
         eval $CMD
