@@ -7,7 +7,7 @@ module Capistrano
       def bundle_delayed_job(*args)
         bin_dir = %w{bin script}.find{|dir_name| Dir.exists?(dir_name)}
         raise "No bin or script dir found in project" if bin_dir.nil?
-        SSHKit::Command.new(:bundle, :exec, "#{bin_dir}/delayed_job", args).to_command
+        SSHKit::Command.new("HOME=/home/$AS_USER", "RAILS_ENV=#{fetch(:rails_env)}", :nice, '-n 15', :bundle, :exec, "#{bin_dir}/delayed_job", args).to_command
       end
 
       def dj_template(template_name)
