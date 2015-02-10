@@ -78,7 +78,7 @@ The name of the service that DelayedJob uses.
 Use monit to monitor DelayedJob processes. This is especially useful on roles with
 constrained memory. On these nodes, DelayedJob processes are regularly killed by the 
 OS. In order to use this setting, install monit on roles that run DelayedJob and
-start monit's httpd server. See (here)[http://mmonit.com/monit/documentation/monit.html#MONIT-HTTPD]
+start monit's httpd server. See [here](http://mmonit.com/monit/documentation/monit.html#MONIT-HTTPD)
 for instructions.
 
 ### Template customization
