@@ -96,6 +96,11 @@ You can also provide path, where to generate templates:
 
     $ bundle exec rails g capistrano:delayed_job:config config/templates
 
+If you're using a custom path, set "templates_path" variable in your `deploy.rb`:
+
+    set :templates_path, "config/templates"
+
+
 ### More Capistrano automation?
 
 If you'd like to streamline your Capistrano deploys, you might want to check
