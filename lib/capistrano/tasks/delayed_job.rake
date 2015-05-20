@@ -27,7 +27,11 @@ namespace :delayed_job do
     on roles fetch(:delayed_job_server_roles) do
       sudo_upload! dj_template('delayed_job_init.erb'), delayed_job_initd_file
       execute :chmod, '+x', delayed_job_initd_file
-      sudo 'update-rc.d', '-f', fetch(:delayed_job_service), 'defaults'
+      if test 'hash update-rc.d'
+        sudo 'update-rc.d', '-f', fetch(:delayed_job_service), 'defaults'
+      elsif test 'hash rc-config'
+        sudo 'rc-config', 'add', fetch(:delayed_job_service), 'defaults'
+      end
     end
   end
 
