@@ -17,7 +17,8 @@ module Capistrano
       end
 
       def dj_template(template_name)
-        config_file = "#{fetch(:templates_path)}/#{template_name}"
+        templates_path = fetch(:templates_path) || "config/deploy/templates"
+        config_file = "#{templates_path}/#{template_name}"
         # if no customized file, proceed with default
         unless File.exists?(config_file)
           config_file = File.join(File.dirname(__FILE__), "../../generators/capistrano/delayed_job/templates/#{template_name}")

@@ -37,7 +37,7 @@ namespace :delayed_job do
 
   before :setup, :defaults
 
-  %w[start stop restart].each do |command|
+  %w[start stop].each do |command|
     desc "#{command} delayed_job"
     task command do
       on roles fetch(:delayed_job_server_roles) do
@@ -48,6 +48,20 @@ namespace :delayed_job do
           # monit is disabled, use the standard init script
           sudo :service, fetch(:delayed_job_service), command
         end
+      end
+    end
+  end
+
+  desc "restart delayed_job"
+  task "restart" do
+    on roles fetch(:delayed_job_server_roles) do
+      if fetch(:delayed_job_monit_enabled)
+        # monit is enabled, use it to restart the service
+        sudo :monit, '-g', 'delayed_job', "restart"
+      else
+        # monit is disabled, use the standard init script
+        sudo :service, fetch(:delayed_job_service), "stop"
+        sudo :service, fetch(:delayed_job_service), "start"
       end
     end
   end
