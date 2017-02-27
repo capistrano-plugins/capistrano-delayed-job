@@ -9,6 +9,7 @@ namespace :load do
     set :delayed_job_workers, 1
     set :delayed_job_service, -> { "delayed_job_#{fetch(:application)}_#{fetch(:stage)}" }
     set :delayed_job_monit_enabled, false
+    set :delayed_job_monit_group, "delayed_job"
 
     set :delayed_job_server_roles, [:app]
   end
@@ -43,7 +44,7 @@ namespace :delayed_job do
       on roles fetch(:delayed_job_server_roles) do
         if fetch(:delayed_job_monit_enabled)
           # monit is enabled, use it to restart the service
-          sudo :monit, '-g', 'delayed_job', command
+          sudo :monit, '-g', fetch(:delayed_job_monit_group), command
         else
           # monit is disabled, use the standard init script
           sudo :service, fetch(:delayed_job_service), command
